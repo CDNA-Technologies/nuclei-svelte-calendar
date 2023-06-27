@@ -1,0 +1,135 @@
+name: Release Package
+
+on:
+  release:
+    types:
+      - published
+env:
+  RELEASE_TAG: ${{github.ref_name}}
+  SLACK_CHANNEL: ${{secrets.SLACK_CHANNEL}}
+  ACTION_URL: ${{github.server_url}}/${{github.event.repository.full_name}}/actions/runs/${{github.run_id}}
+  TRIGGERER: ${{github.server_url}}/${{github.triggering_actor}}|${{github.triggering_actor}}
+  RELEASE_NAME: ${{github.event.repository.name}}:${{github.ref_name}}
+
+jobs:
+  production-approval:
+    name: Approve Production publish
+    runs-on: [self-hosted, frontend-runner]
+    steps:
+      - name: Echo branch
+        run: echo "Current branch ${{github.event.release.target_commitish}}"
+
+      - name: Generate token
+        id: generate_token
+        if: ${{github.event.release.target_commitish  == 'dev' || github.event.release.target_commitish  == 'master'}}
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{secrets.APPROVAL_WORKFLOW_APP_ID}}
+          private_key: ${{secrets.APPROVAL_WORKFLOW_APP_PRIVATE_KEY}}
+
+      - name: Wait for approval
+        uses: trstringer/manual-approval@v1
+        if: ${{github.event.release.target_commitish  == 'dev' || github.event.release.target_commitish  == 'master'}}
+        timeout-minutes: 5
+        with:
+          secret: ${{steps.generate_token.outputs.token}}
+          approvers: mmstack-svelte-release-approvers
+          minimum-approvals: 1
+          issue-title: 'Production publish: ${{env.RELEASE_NAME}} triggered by ${{github.triggering_actor}}'
+
+  build:
+    runs-on: [self-hosted, frontend-runner]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: npm install
+      - run: npm run build
+      - run: |-
+          echo ${{ ( github.event.release.target_commitish  == 'dev' || github.event.release.target_commitish  == 'master' && needs.production-approval.result == 'success')}}
+          echo ${{!(github.event.release.target_commitish  == 'dev' || github.event.release.target_commitish  == 'master')}}
+
+  publish-package:
+    needs: [production-approval, build]
+    if: ${{ ( github.event.release.target_commitish  == 'dev' || github.event.release.target_commitish  == 'master' && needs.production-approval.result == 'success') || !(github.event.release.target_commitish  == 'dev' || github.event.release.target_commitish  == 'master') }}
+    runs-on: [self-hosted, frontend-runner]
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://npm.pkg.github.com/
+
+      - name: Install packages
+        run: npm install
+
+      - name: Versioning
+        run: npm version ${{env.RELEASE_TAG}} --no-git-tag-version
+
+      - name: Add token to .npmrc
+        run: |-
+          echo '@CDNA-Technologies:registry=https://npm.pkg.github.com/CDNA-Technologies' >> .npmrc
+          echo '//npm.pkg.github.com/:_authToken=${{secrets.NPM_PACKAGE_PUBLISH_TOKEN}}' >> .npmrc
+          echo 'registry=https://registry.npmjs.org' >> .npmrc
+
+      - name: Build, Package & Publish
+        run: |-
+          npm run build
+          npm run package
+          npm publish ./package
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_PACKAGE_PUBLISH_TOKEN}}
+
+  production-slack-notification:
+    name: Notify result in Slack
+    needs: [publish-package]
+    if: ${{ (github.event.release.target_commitish  == 'dev' || github.event.release.target_commitish  == 'master') && needs.publish-package.result == 'success' }}
+    runs-on: [self-hosted, frontend-runner]
+    steps:
+      - name: Remove 'v' from Release Tag
+        run: |-
+          RAW_RELEASE_TAG=${{env.RELEASE_TAG}}
+          RELEASE_TAG=$(echo $RAW_RELEASE_TAG | sed 's/v//')
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
+
+      - name: Convert Release Notes to single line
+        run: |-
+          RELEASE_NOTES=$(echo ${{toJSON(github.event.release.body)}} | sed 's/\"//')
+          echo "RELEASE_NOTES=$RELEASE_NOTES" >> $GITHUB_ENV
+
+      - name: Send Slack success notification
+        id: success-notification
+        uses: slackapi/slack-github-action@v1.18.0
+        with:
+          payload: |
+            {
+              "channel": "${{env.SLACK_CHANNEL}}",
+              "attachments": [
+                {
+                  "color": "#3FB950",
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "<${{env.ACTION_URL}}|:tada: *New Package Published: ${{env.RELEASE_NAME}} is successful*>"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": ":woman-raising-hand: *Triggered by* <${{env.TRIGGERER}}>\n:writing_hand: *New Package Available:* \n Install from the command line: ```npm i @${{github.repository}}@${{env.RELEASE_TAG}}``` Or via package.json: \n ```'@${{github.repository}}' : '${{env.RELEASE_TAG}}'``` \n\n :rocket: *Changes:* \n ```${{env.RELEASE_NOTES}}``` \n cc: @channel"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{secrets.SLACK_WEBHOOK_URL}}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
