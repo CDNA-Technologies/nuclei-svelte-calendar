@@ -1,9 +1,20 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vitest/config';
 
-export default defineConfig({
+/** @type {import('vite').UserConfig} */
+const config = {
 	plugins: [sveltekit()],
 	test: {
-		include: ['src/**/*.{test,spec}.{js,ts}']
+		mockReset: true,
+		environment: 'jsdom',
+		globals: true,
+		include: ['src/**/*.test.{js,ts}'],
+		setupFiles: 'src/setupTests.ts'
+	},
+	server: {
+		fs: {
+			allow: ['.svelte-kit', 'node-modules', 'src', 'src/lib', 'src/routes']
+		}
 	}
-});
+};
+
+export default config;

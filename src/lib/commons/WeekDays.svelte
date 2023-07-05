@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DAYS_OF_THE_WEEK } from './constants';
+	import { DAYS_OF_THE_WEEK } from '../config/constants';
 
 	export let firstWeekDayOffset: number = 0;
 	const getDaysOfWeek = () => {

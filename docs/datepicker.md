@@ -1,6 +1,4 @@
-# Svelte Calendar
-
-## 1. DatePicker
+## DatePicker
 > DatePicker is for selecting a particular date from calendar.
 
 Features
@@ -57,12 +55,3 @@ Features
 		 When the user selected any date then the `cell.date` is returned
 
 
-
-## 2. RangePicker
-> RangePicker is for selecting a range of dates from calendar.
-
-Features
-1. Select any start date and end date
-2. The selected start date and end date will have a color
-3. The dates in between will have a light color
-4. Any range date when selected sends back the date data of start date and end date

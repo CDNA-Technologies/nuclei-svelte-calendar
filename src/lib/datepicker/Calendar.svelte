@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import WeekDays from '../commons/WeekDays.svelte';
+	import { MONTHS_OF_THE_YEAR } from '../config/constants';
+	import type { CellData, Data } from '../messages/calendar-data.msg';
+	import { findCurrentCalendarDataWeekNumber, parseDate } from '../utils/util';
 	import Cell from './Cell.svelte';
-	import WeekDays from './WeekDays.svelte';
-	import type { CellData, Data } from './calendar-data.msg';
-	import { MONTHS_OF_THE_YEAR } from './constants';
-	import { findCurrentCalendarDataWeekNumber, parseDate } from './util';
 
 	export let minDate: string;
 	export let maxDate: string;

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import type { CellData } from './calendar-data.msg';
+	import type { CellData } from '../messages/calendar-data.msg';
 
 	export let day: CellData;
 	export let today: CellData;
