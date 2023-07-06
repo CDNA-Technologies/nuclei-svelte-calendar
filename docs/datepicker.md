@@ -1,7 +1,7 @@
 ## DatePicker
 > DatePicker is for selecting a particular date from calendar.
 
-Features
+### Features
 1. Select any particular date
 2. The selected date will have a color
 3. The current date will have a color
@@ -58,3 +58,9 @@ Features
 ```
 <Calendar bind:selectedDate {calendarReqData} minDate="2023-6-28" maxDate="2024-6-28" />
 ```
+
+### Props passed
+1. `selectedDate: string` - The variable to which the selected date is assigned
+2. `calendarReqData: CalendarReqData` - The extra data passed to modify the calendar
+3. `minDate: string` - The minimum date that can be selected
+4. `maxDate: string` - The maximum date that can be selected

@@ -1,7 +1,7 @@
 ## RangePicker
 > RangePicker is for selecting a particular range of dates from calendar.
 
-Features
+### Features
 1. Select any start date and end date
 2. The selected date will have a color
 3. The current date will have a color
@@ -19,3 +19,10 @@ Features
     maxDate="2024-7-17"
 />
 ```
+
+### Props passed
+1. `selectedStartDate: string` - The start date variable where the selected start date is assigned
+2. `selectedEndDate: string` - The end date variable where the selected end date is assigned
+3. `calendarReqData: CalendarReqData` - The extra data passed to modify the calendar
+4. `minDate: string` - The minimum date that can be selected
+5. `maxDate: string` - The maximum date that can be selected
