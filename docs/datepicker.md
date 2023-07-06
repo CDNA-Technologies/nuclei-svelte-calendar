@@ -54,4 +54,7 @@ Features
 		 `}`
 		 When the user selected any date then the `cell.date` is returned
 
-
+### How to use it
+```
+<Calendar bind:selectedDate {calendarReqData} minDate="2023-6-28" maxDate="2024-6-28" />
+```

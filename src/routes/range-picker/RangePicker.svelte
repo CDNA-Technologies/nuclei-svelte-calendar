@@ -10,7 +10,9 @@
 </script>
 
 <!-- The button to open modal -->
+<div class=" mt-20 h-full text-center ">
 <label for={modalId} class="btn">Rangepicker</label>
+</div>
 
 <!-- Put this part before </body> tag -->
 <input type="checkbox" id={modalId} class="modal-toggle" />

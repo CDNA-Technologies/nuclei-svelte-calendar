@@ -6,18 +6,20 @@
 	export let modalId: string = 'date-picker-modal';
 	export let calendarReqData: Map<string, Data> = new Map();
 
-	let selectedDate: Date;
+	let selectedDate: Date | undefined = undefined;
 </script>
 
 <!-- The button to open modal -->
-<label for={modalId} class="bg-base-200 border-base-300 border rounded-lg"
-	>{selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : 'Select Date'}</label
+<div class=" mt-20 h-full text-center ">
+	<label for={modalId} class="btn"
+	>Datepicker</label
 >
+</div>
 
 <!-- Put this part before </body> tag -->
 <input type="checkbox" id={modalId} class="modal-toggle" />
 <label for={modalId} class="modal cursor-pointer h-full">
-	<label class="modal-box relative h-3/4" for="">
+	<label class="modal-box relative h-3/4" for="{modalId}">
 		<Calendar bind:selectedDate {calendarReqData} minDate="2023-6-28" maxDate="2024-6-28" />
 	</label>
 </label>
