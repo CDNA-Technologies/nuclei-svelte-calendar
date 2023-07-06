@@ -1,5 +1,6 @@
 const plugin = require('tailwindcss/plugin');
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
 	mode: 'jit',
 	content: ['./src/**/*.{html,js,svelte,ts}'],
@@ -8,20 +9,17 @@ module.exports = {
 		require('tailwindcss-flip'),
 		plugin(function ({ addBase }) {
 			addBase({
-				'.nav-text': {
-					'@apply font-semibold text-xl': {} // font-weight: 600; font-size: 20px
-				},
 				'.heading-1': {
-					'@apply font-medium text-2xl': {} // font-weight: 500; font-size: 24px
+					'@apply font-semibold text-xl': {} // done
 				},
 				'.heading-2': {
-					'@apply font-medium text-xl': {} // font-weight: 500; font-size: 20px
-				},
-				'.heading-3': {
 					'@apply font-medium text-base': {} // font-weight: 500; font-size: 16px
 				},
+				'.content': {
+					'@apply font-normal text-base': {} // font-weight: 400; font-size: 16px
+				},
 				'.sub-text': {
-					'@apply font-normal text-sm': {} // font-weight: 400; font-size: 14px
+					'@apply font-normal text-xs': {} // done
 				},
 				'.card-heading': {
 					'@apply font-semibold text-lg': {} // font-weight: 600; font-size: 18px
@@ -30,25 +28,19 @@ module.exports = {
 					'@apply font-medium text-base': {} // font-weight: 500; font-size: 16px
 				},
 				'.card-content': {
-					'@apply font-medium text-sm': {} // font-weight: 400; font-size: 14px
-				},
-				'.content': {
-					'@apply font-normal text-base': {} // font-weight: 400; font-size: 16px
-				},
-				'.content-2': {
-					'@apply font-normal text-xs': {} // font-weight: 400; font-size: 12px
-				},
-				'.content-3': {
-					'@apply font-normal text-xs': {} // font-weight: 400; font-size: 12px
+					'@apply font-normal text-sm': {} // font-weight: 400; font-size: 14px
 				},
 				'.cta-text': {
-					'@apply font-bold text-xl': {} // font-weight: 700; font-size: 20px
+					'@apply font-semibold text-xl': {} // done
 				},
 				'.cta-ghost-text': {
 					'@apply font-bold text-sm': {} // font-weight: 700; font-size: 14px
 				},
+				'.nav-text': {
+					'@apply font-semibold text-xl': {} // done
+				},
 				'.base-content-light': {
-					'@apply fill-base-content text-base-content stroke-base-content text-opacity-50': {} // greyish color for light theme
+					'@apply fill-base-content text-base-content stroke-base-content text-opacity-50': {}
 				}
 			});
 		})
@@ -57,10 +49,12 @@ module.exports = {
 		extend: {
 			screens: {
 				'2xs': '240px',
-				xs: '275px'
+				xs: '275px',
+				sm: '380px',
+				md: '400px',
+				lg: '540px'
 			},
 			colors: {
-				'nu-black-50': 'rgba(186, 186, 186)',
 				'nu-black-100': 'rgba(118, 118, 118)',
 				'nu-black-200': 'rgba(17, 17, 17)',
 				'nu-black-900': 'rgba(17, 24, 39)',
@@ -71,8 +65,7 @@ module.exports = {
 				'nu-slate-500': 'rgba(100, 116, 139)',
 				'nu-wallet': 'rgba(0, 195, 67)',
 				'nu-success': 'rgba(44, 194, 114)',
-				'nu-error': 'rgba(244, 67, 54)',
-				'nu-warning': 'rgba(255, 210, 96)',
+				'nu-error': 'rgba(244, 67, 54)'
 			},
 			animation: {
 				swap: 'swap 500ms linear 1'
