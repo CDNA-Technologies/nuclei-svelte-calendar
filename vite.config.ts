@@ -1,9 +1,18 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vitest/config';
 
-export default defineConfig({
+/** @type {import('vite').UserConfig} */
+const config = {
+	build: {
+		target: ['es2015', 'safari11']
+	},
 	plugins: [sveltekit()],
 	test: {
-		include: ['src/**/*.{test,spec}.{js,ts}']
+		mockReset: true,
+		environment: 'jsdom',
+		globals: true,
+		include: ['src/**/*.test.{js,ts}'],
+		setupFiles: 'src/setupTests.ts'
 	}
-});
+};
+
+export default config;
